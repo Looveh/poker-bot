@@ -13,6 +13,12 @@
 (defn key->action [key]
   (throw (Exception. "TODO")))
 
+(defn- java-card->card [card]
+  (throw (Exception. "TODO")))
+
+(defn- java-cards->cards [cards]
+  (map java-card->card cards))
+
 (defn- get-round [state]
   (let [cards-on-table (.getCommunityCards state)]
     (cond (<= cards-on-table 3) :flop
@@ -27,12 +33,6 @@
     (if (nil? call-action)
       0
       (.getAmount call-action))))
-
-(defn- java-card->card [card]
-  (throw (Exception. "TODO")))
-
-(defn- java-cards->cards [cards]
-  (map java-card->card cards))
 
 (defn get-game-state [client request]
   (let [state (.getCurrentPlayState client)]
