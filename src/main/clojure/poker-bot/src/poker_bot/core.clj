@@ -5,12 +5,21 @@
 (declare get-bot)
 (declare get-best-action)
 
+(def bot (atom nil))
+(def client (atom nil))
+(def host "poker.cygni.se")
+(def port 4711)
+
 (defn -main
   []
-  (.playATrainingGame
-   (poker-bot
-    "poker.cygni.se"
-    4711)))
+  (swap!
+   bot
+   (get-bot host port))
+  (swap!
+   client
+   (PlayerClient. @bot host port))
+  (play-training-game
+   @client))
 
 (defn get-bot
   [host port]
@@ -82,3 +91,8 @@
   (first
    (.getPossibleActions
     request)))
+
+(play-training-game
+ [client]
+ (.connect client)
+ (.registerForPlay Room/TRAINING))
