@@ -1,5 +1,6 @@
 (ns poker-bot.core
   (:gen-class)
+  (:use [clojure.tools.logging])
   (:import
    (se.cygni.texasholdem.player
     Player)
@@ -68,76 +69,76 @@
      (get-best-action request))
     (onPlayIsStarted
      [event]
-     (println "Play started")
+     (info "Play started")
      )
     (onTableChangedStateEvent
      [event]
-     (println "Table changed state")
+     (info "Table changed state")
      )
     (onYouHaveBeenDealtACard
      [event]
-     (println "We were dealt a card")
+     (info "We were dealt a card")
      )
     (onCommunityHasBeenDealtACard
      [event]
-     (println "Community has been dealt a card")
+     (info "Community has been dealt a card")
      )
     (onPlayerBetBigBlind
      [event]
-     (println "Player bet big blind")
+     (info "Player bet big blind")
      )
     (onPlayerBetSmallBlind
      [event]
-     (println "Player bet small blind")
+     (info "Player bet small blind")
      )
     (onPlayerFolded
      [event]
-     (println "Player folded")
+     (info "Player folded")
      )
     (onPlayerForcedFolded
      [event]
-     (println "Player forced to fold")
+     (info "Player forced to fold")
      )
     (onPlayerCalled
      [event]
-     (println "Player called")
+     (info "Player called")
      )
     (onPlayerRaised
      [event]
-     (println "Player raised")
+     (info "Player raised")
      )
     (onTableIsDone
      [event]
-     (println "Table is done")
+     (info "Table is done")
      )
     (onPlayerChecked
      [event]
-     (println "Player forced to fold")
+     (info "Player forced to fold")
      )
     (onYouWonAmount
      [event]
-     (println "We won an amount")
+     (info "We won an amount")
      )
     (onShowDown
      [event]
-     (println "Show Down!")
+     (info "Show Down!")
      )
     (onPlayerQuit
      [event]
-     (println "Player quit!")
+     (info "Player quit!")
      )
     (connectionToGameServerLost
      []
-     (println "Connection to game server lost")
+     (info "Connection to game server lost")
      (System/exit 0)
      )
     (connectionToGameServerEstablished
      []
-     (println "Connection to game server established")
+     (info "Connection to game server established")
      )
     (serverIsShuttingDown
      [event]
-     (println "Server shutting down")
+     (info "Server shutting down")
      )))
 
 (defn get-best-action
