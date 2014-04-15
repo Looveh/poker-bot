@@ -7,13 +7,14 @@
 
 (def suits #{:heart :spade :diamond :clubs})
 
-(def ranks #{:ace :two :three :four :five :six :seven
-             :eight :nine :ten :jack :queen :king})
+(def ranks #{1 2 3 4 5 6 7 8 9 10 11 12 13})
 
 (def full-deck
   (set (for [suit suits
              rank ranks]
          {:suit suit :rank rank})))
+
+(def all-hands (combinations full-deck 5))
 
 (defn action [game-state]
   (if (can-check? game-state)
@@ -36,7 +37,7 @@
         odds))))
 
 (defn seen-cards [game-state]
-  (into (cards-on-hand game-state) (cards-on-table game-state)))
+  (into (:cards-on-hand game-state) (:cards-on-table game-state)))
 
 (defn unseen-cards [game-state]
   (difference full-deck (seen-cards game-state)))
@@ -60,21 +61,22 @@
         outs (map #(difference % (intersection % (seen-cards game-state))) possible-flushes)]
     (apply union outs)))
 
+(flush-outs game-state)
+
 (defn straight-outs [game-state]
-  (todo))
+  (let [all-straights (into #{} (filter straight? all-hands))]
+    (map
+     #(intersection % (seen-cards game-state))
+     all-straights)))
 
-(defn can-check? [game-state]
-  (todo))
+(defn straight? [cards]
+  (not-any?
+   false?
+   (reductions
+    #(if (= (inc (:rank %1))
+            (:rank %2)) %2 false)
+    (sort-by :rank cards))))
 
-(defn flop? [game-state]
-  (todo))
-
-(defn turn? [game-state]
-  (todo))
-
-(defn cards-on-hand [game-state]
-  (todo))
-
-(defn cards-on-table [game-state]
-  (todo))
-
+(def game-state
+  {:cards-on-hand #{{:rank :spades :suit 1} {:rank :spades :suit 2}}
+   :cards-on-table #{{:rank :spades :suit 3} {:rank :spades :suit 4} {:rank :spades :suit 5}}})
