@@ -35,6 +35,29 @@
         (* odds 2)
         odds))))
 
+(defn seen-cards [game-state]
+  (into (cards-on-hand game-state) (cards-on-table game-state)))
+
+(defn unseen-cards [game-state]
+  (difference full-deck (seen-cards game-state)))
+
+(defn outs [game-state]
+  (union (pair-outs game-state)
+         (straight-outs game-state)
+         (flush-outs game-state)))
+
+(defn pair-outs [game-state]
+  (filter #(contains? (vals (cards-on-hand game-state))
+                      (:rank %))
+          unseen-cards))
+
+(defn flush-outs [game-state]
+  (let [possible-straights (filter #() (combinations full-deck 5))]
+    ))
+
+(defn straight-outs [game-state]
+  (todo))
+
 (defn can-check? [game-state]
   (todo))
 
@@ -48,34 +71,5 @@
   (todo))
 
 (defn cards-on-table [game-state]
-  (todo))
-
-(defn seen-cards [game-state]
-  (into (cards-on-hand game-state) (cards-on-table game-state)))
-
-(defn unseen-cards [game-state]
-  (difference full-deck (seen-cards game-state)))
-
-(defn outs [game-state]
-  (union (pair-outs game-state)
-                            (straight-outs game-state)
-                            (flush-outs game-state)))
-
-(defn pair-outs [game-state]
-  (filter #(contains? (vals (cards-on-hand game-state))
-                      (:rank %))
-          unseen-cards))
-
-(defn straight-outs [game-state]
-  (let [possible-straights (filter #() (combinations full-deck 5))]
-    ))
-
-(defn flush-outs [game-state]
-  (todo))
-
-(defn pot-size [game-state]
-  (todo))
-
-(defn amount-needed-to-call [game-state]
   (todo))
 
