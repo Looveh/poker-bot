@@ -1,3 +1,7 @@
+(ns poker-bot.logic
+  (:require [clojure.set :refer [union difference]]
+            [clojure.contrib.combinatorics :refer [combinations]]))
+
 (defn todo []
   (throw (Exception. "TODO")))
 
@@ -8,8 +12,8 @@
 
 (def full-deck
   (set (for [suit suits
-        rank ranks]
-    {:suit suit :rank rank})))
+             rank ranks]
+         {:suit suit :rank rank})))
 
 (defn action [game-state]
   (if (can-check? game-state)
@@ -23,8 +27,8 @@
           (amount-needed-to-call game-state))))
 
 (defn hand-odds [game-state]
-  (let [odds (dec (/ (number-of-unseen-cards game-state)
-                  (number-of-outs game-state)))]
+  (let [odds (dec (/ (count (unseen-cards game-state))
+                     (count (outs game-state))))]
     (if (flop? game-state)
       (* odds 4)
       (if (turn? game-state)
@@ -46,12 +50,27 @@
 (defn cards-on-table [game-state]
   (todo))
 
-(defn number-of-unseen-cards [game-state]
-  (let [seen-cards (into (cards-on-hand) (cards-on-table))
-        unseen-cards (clojure.set/difference full-deck seen-cards)])
-    (count unseen-cards))
+(defn seen-cards [game-state]
+  (into (cards-on-hand game-state) (cards-on-table game-state)))
 
-(defn number-of-outs [game-state]
+(defn unseen-cards [game-state]
+  (difference full-deck (seen-cards game-state)))
+
+(defn outs [game-state]
+  (union (pair-outs game-state)
+                            (straight-outs game-state)
+                            (flush-outs game-state)))
+
+(defn pair-outs [game-state]
+  (filter #(contains? (vals (cards-on-hand game-state))
+                      (:rank %))
+          unseen-cards))
+
+(defn straight-outs [game-state]
+  (let [possible-straights (filter #() (combinations full-deck 5))]
+    ))
+
+(defn flush-outs [game-state]
   (todo))
 
 (defn pot-size [game-state]
