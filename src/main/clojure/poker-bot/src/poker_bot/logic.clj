@@ -57,19 +57,3 @@
 
 (defn straight-outs [game-state]
   (todo))
-
-(defn can-check? [game-state]
-  (todo))
-
-(defn flop? [game-state]
-  (todo))
-
-(defn turn? [game-state]
-  (todo))
-
-(defn cards-on-hand [game-state]
-  (todo))
-
-(defn cards-on-table [game-state]
-  (todo))
-
