@@ -1,5 +1,5 @@
 (ns poker-bot.logic
-  (:require [clojure.set :refer [union difference]]
+  (:require [clojure.set :refer [union difference intersection]]
             [clojure.contrib.combinatorics :refer [combinations]]))
 
 (defn todo []
@@ -51,9 +51,14 @@
                       (:rank %))
           unseen-cards))
 
+(defn flush? [cards]
+  (= 1 (count (distinct (map :suit cards)))))
+
 (defn flush-outs [game-state]
-  (let [possible-straights (filter #() (combinations full-deck 5))]
-    ))
+  (let [all-flushes (filter #(flush?) (combinations full-deck 5))
+        possible-flushes (filter #(= 4 (intersection % (seen-cards game-state))) all-flushes)
+        outs (map #(difference % (intersection % (seen-cards game-state))) possible-flushes)]
+    (apply union outs)))
 
 (defn straight-outs [game-state]
   (todo))
@@ -72,4 +77,3 @@
 
 (defn cards-on-table [game-state]
   (todo))
-
