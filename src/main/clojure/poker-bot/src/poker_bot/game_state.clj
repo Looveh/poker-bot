@@ -1,56 +1,44 @@
 (ns poker-bot.game-state
-  (:import
-   (se.cygni.texasholdem.player
-    Player)
-   (se.cygni.texasholdem.game
-    Action
-    Card
-    Hand
-    PlayerShowDown
-    Room
-    ActionType)
-   (se.cygni.texasholdem.client
-    PlayerClient
-    CurrentPlayState)
-   (se.cygni.texasholdem.communication.message.request
-    ActionRequest)))
+  (:import (se.cygni.texasholdem.player Player)
+           (se.cygni.texasholdem.game Action
+                                      Card
+                                      Hand
+                                      PlayerShowDown
+                                      Room
+                                      ActionType)
+           (se.cygni.texasholdem.client PlayerClient
+                                        CurrentPlayState)
+           (se.cygni.texasholdem.communication.message.request ActionRequest)))
 
-(declare get-game-state)
-(declare get-round)
-(declare can-check?)
-(declare flop?)
-(declare amount-needed-to-call)
-(declare find-first)
+(defn key->action [key]
+  (throw (Exception. "TODO")))
 
-(defn get-game-state [client request]
-  (let [state (.getCurrentPlayState client)]
-    {:cards-on-hand (.getMyCards state)
-     :cards-on-table (.getCommunityCards state)
-     :pot-amount (.getPotTotal state)
-     :turn-type (get-round state)
-     :call-amount (amount-needed-to-call state)
-     :possible-actions (.getPossibleActions request)}))
-
-(defn get-round [state]
+(defn- get-round [state]
   (let [cards-on-table (.getCommunityCards state)]
-    (cond
-     (= cards-on-table 0) :flop
-     (= cards-on-table 0) :turn
-     (= cards-on-table 0) :river)))
+    (cond (<= cards-on-table 3) :flop
+          (=  cards-on-table 4) :turn
+          (=  cards-on-table 5) :river)))
 
-(defn can-check? [game-state]
-  (contains?
-   (:possible-actions game-state)
-    ActionType/CHECK))
+(defn- find-first [f coll]
+  (first (filter f coll)))
 
-(defn flop? [game-state]
-  (= :flop (:turn-type game-state)))
-
-(defn amount-needed-to-call [state]
+(defn- amount-needed-to-call [state]
   (let [call-action (find-first #(= % ActionType/CALL))]
     (if (nil? call-action)
       0
       (.getAmount call-action))))
 
-(defn find-first [f coll]
-  (first (filter f coll)))
+(defn- java-card->card [card]
+  (throw (Exception. "TODO")))
+
+(defn- java-cards->cards [cards]
+  (map java-card->card cards))
+
+(defn get-game-state [client request]
+  (let [state (.getCurrentPlayState client)]
+    {:cards-on-hand (java-cards->cards (.getMyCards state))
+     :cards-on-table (java-cards->cards (.getCommunityCards state))
+     :pot-amount (.getPotTotal state)
+     :call-amount (amount-needed-to-call state)
+     :round (get-round state)}))
+
