@@ -31,21 +31,6 @@
         (* odds 2)
         odds))))
 
-(defn can-check? [game-state]
-  (todo))
-
-(defn flop? [game-state]
-  (todo))
-
-(defn turn? [game-state]
-  (todo))
-
-(defn cards-on-hand [game-state]
-  (todo))
-
-(defn cards-on-table [game-state]
-  (todo))
-
 (defn number-of-unseen-cards [game-state]
   (let [seen-cards (into (cards-on-hand) (cards-on-table))
         unseen-cards (clojure.set/difference full-deck seen-cards)])
@@ -53,10 +38,3 @@
 
 (defn number-of-outs [game-state]
   (todo))
-
-(defn pot-size [game-state]
-  (todo))
-
-(defn amount-needed-to-call [game-state]
-  (todo))
-

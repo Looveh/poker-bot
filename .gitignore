@@ -2,3 +2,5 @@ target
 dump
 *.out
 *.iml
+*.ipr
+*.iws
