@@ -4,6 +4,6 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]]
-  :resource-paths ["resources/texas-holdem-common.jar"]
+  :resource-paths ["resources/texas-holdem-java-client-1.1.20-jar-with-dependencies.jar"]
   :main poker-bot.core
   :aot [poker-bot.core])
