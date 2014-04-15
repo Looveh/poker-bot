@@ -47,7 +47,9 @@
   (todo))
 
 (defn number-of-unseen-cards [game-state]
-  (todo)
+  (let [seen-cards (into (cards-on-hand) (cards-on-table))
+        unseen-cards (clojure.set/difference full-deck seen-cards)])
+    (count unseen-cards))
 
 (defn number-of-outs [game-state]
   (todo))
