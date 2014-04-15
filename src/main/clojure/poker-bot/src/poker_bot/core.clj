@@ -2,7 +2,7 @@
   (:gen-class))
 (import 'se.cygni.texasholdem.player.Player)
 
-(declare poker-bot)
+(declare get-bot)
 (declare get-best-action)
 
 (defn -main
@@ -12,7 +12,7 @@
     "poker.cygni.se"
     4711)))
 
-(defn poker-bot
+(defn get-bot
   [host port]
   (proxy [Player] []
     (getName
