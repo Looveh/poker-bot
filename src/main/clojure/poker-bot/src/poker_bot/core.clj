@@ -40,8 +40,14 @@
 (def port 4711)
 
 (defn- get-best-action [request]
-  (let [game-state (get-game-state client request)]
+  (let [game-state (get-game-state @client request)]
     (key->action (action game-state))))
+
+(defn get-action [request]
+  (try
+    (let [action (get-best-action request)]
+      (info  (str "Action response " action)))
+  (catch Exception e (info (str "caught exception: " (.getMessage e))))))
 
 (defn- play-training-game [client]
   (.connect client)
@@ -50,46 +56,47 @@
 (defn- get-bot [host port]
   (proxy [Player] []
     (getName []
-     "ClojureBot")
-    (actionRequired [request]
-     (get-best-action request))
+             "ClojureBot")
+    (actionRequired
+     [request]
+     (get-action request))
     (onPlayIsStarted [event]
-     (info "Play started"))
+                     (info "Play started"))
     (onTableChangedStateEvent [event]
-     (info "Table changed state"))
+                              (info "Table changed state"))
     (onYouHaveBeenDealtACard [event]
-     (info "We were dealt a card"))
+                             (info "We were dealt a card"))
     (onCommunityHasBeenDealtACard [event]
-     (info "Community has been dealt a card"))
+                                  (info "Community has been dealt a card"))
     (onPlayerBetBigBlind [event]
-     (info "Player bet big blind"))
+                         (info "Player bet big blind"))
     (onPlayerBetSmallBlind [event]
-     (info "Player bet small blind"))
+                           (info "Player bet small blind"))
     (onPlayerFolded [event]
-     (info "Player folded"))
+                    (info "Player folded"))
     (onPlayerForcedFolded [event]
-     (info "Player forced to fold"))
+                          (info "Player forced to fold"))
     (onPlayerCalled [event]
-     (info "Player called"))
+                    (info "Player called"))
     (onPlayerRaised [event]
-     (info "Player raised"))
+                    (info "Player raised"))
     (onTableIsDone [event]
-     (info "Table is done"))
+                   (info "Table is done"))
     (onPlayerChecked [event]
-     (info "Player forced to fold"))
+                     (info "Player forced to fold"))
     (onYouWonAmount [event]
-     (info "We won an amount"))
+                    (info "We won an amount"))
     (onShowDown [event]
-     (info "Show Down!"))
+                (info "Show Down!"))
     (onPlayerQuit [event]
-     (info "Player quit!"))
+                  (info "Player quit!"))
     (connectionToGameServerLost []
-     (info "Connection to game server lost")
-     (System/exit 0))
+                                (info "Connection to game server lost")
+                                (System/exit 0))
     (connectionToGameServerEstablished []
-     (info "Connection to game server established"))
+                                       (info "Connection to game server established"))
     (serverIsShuttingDown [event]
-     (info "Server shutting down"))))
+                          (info "Server shutting down"))))
 
 (defn -main []
   (do

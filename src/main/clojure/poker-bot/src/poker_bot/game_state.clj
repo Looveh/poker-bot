@@ -60,8 +60,8 @@
 (defn- find-first [f coll]
   (first (filter f coll)))
 
-(defn- amount-needed-to-call [state]
-  (let [call-action (find-first #(= % ActionType/CALL))]
+(defn- amount-needed-to-call [request]
+  (let [call-action (find-first #(= % ActionType/CALL) (.getPossibleActions request))]
     (if (nil? call-action)
       0
       (.getAmount call-action))))
@@ -71,6 +71,6 @@
     {:cards-on-hand (java-cards->cards (.getMyCards state))
      :cards-on-table (java-cards->cards (.getCommunityCards state))
      :pot-amount (.getPotTotal state)
-     :call-amount (amount-needed-to-call state)
+     :call-amount (amount-needed-to-call request)
      :round (get-round state)}))
 
