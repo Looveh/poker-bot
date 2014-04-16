@@ -53,9 +53,9 @@
 
 (defn- get-round [state]
   (let [cards-on-table (.getCommunityCards state)]
-    (cond (<= cards-on-table 3) :flop
-          (=  cards-on-table 4) :turn
-          (=  cards-on-table 5) :river)))
+    (cond (<= (count cards-on-table) 3) :flop
+          (=  (count cards-on-table) 4) :turn
+          (=  (count cards-on-table) 5) :river)))
 
 (defn- find-first [f coll]
   (first (filter f coll)))
