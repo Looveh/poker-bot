@@ -44,6 +44,7 @@
 (defn- get-best-action [request]
   (let [game-state (get-game-state @client request)
         action-type (key->ActionType (action game-state))]
+    (info (str "Action requested, game state: " game-state))
     (find-first #(= action-type (.getActionType %)) (.getPossibleActions request))))
 
 (defn get-action [request]
@@ -66,33 +67,47 @@
     (onPlayIsStarted [event]
                      (info "Play started"))
     (onTableChangedStateEvent [event]
-                              (info "Table changed state"))
+                              ;(info "Table changed state")
+                              )
     (onYouHaveBeenDealtACard [event]
-                             (info "We were dealt a card"))
+                             ;(info "We were dealt a card")
+                             )
     (onCommunityHasBeenDealtACard [event]
-                                  (info "Community has been dealt a card"))
+                                  ;(info "Community has been dealt a card")
+                                  )
     (onPlayerBetBigBlind [event]
-                         (info "Player bet big blind"))
+                         ;(info "Player bet big blind")
+                         )
     (onPlayerBetSmallBlind [event]
-                           (info "Player bet small blind"))
+                           ;(info "Player bet small blind")
+                           )
     (onPlayerFolded [event]
-                    (info "Player folded"))
+                    ;(info "Player folded")
+                    )
     (onPlayerForcedFolded [event]
-                          (info "Player forced to fold"))
+                          ;(info "Player forced to fold")
+                          )
     (onPlayerCalled [event]
-                    (info "Player called"))
+                    ;(info "Player called")
+                    )
     (onPlayerRaised [event]
-                    (info "Player raised"))
+                    ;(info "Player raised")
+                    )
     (onTableIsDone [event]
-                   (info "Table is done"))
+                   ;(info "Table is done")
+                   )
     (onPlayerChecked [event]
-                     (info "Player forced to fold"))
+                     ;(info "Player forced to fold")
+                     )
     (onYouWonAmount [event]
-                    (info "We won an amount"))
+                    ;(info "We won an amount")
+                    )
     (onShowDown [event]
-                (info "Show Down!"))
+                ;(info "Show Down!")
+                )
     (onPlayerQuit [event]
-                  (info "Player quit!"))
+                  ;(info "Player quit!")
+                  )
     (connectionToGameServerLost []
                                 (info "Connection to game server lost")
                                 (System/exit 0))

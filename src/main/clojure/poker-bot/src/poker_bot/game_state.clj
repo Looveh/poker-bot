@@ -82,7 +82,7 @@
           (=  (count cards-on-table) 5) :river)))
 
 (defn- amount-needed-to-call [request]
-  (let [call-action (find-first #(= % ActionType/CALL) (.getPossibleActions request))]
+  (let [call-action (find-first #(= (.getActionType %) ActionType/CALL) (.getPossibleActions request))]
     (if (nil? call-action)
       0
       (.getAmount call-action))))
