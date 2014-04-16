@@ -1,4 +1,5 @@
 (ns poker-bot.game-state
+  (:require [clojure.contrib.seq-utils :refer [find-first]])
   (:import (se.cygni.texasholdem.player Player)
            (se.cygni.texasholdem.game Action
                                       Card
@@ -12,7 +13,7 @@
                                         CurrentPlayState)
            (se.cygni.texasholdem.communication.message.request ActionRequest)))
 
-(defn key->action [key]
+(defn key->ActionType [key]
   (condp = key
     :check ActionType/CHECK
     :call ActionType/CALL
@@ -80,14 +81,14 @@
           (=  (count cards-on-table) 4) :turn
           (=  (count cards-on-table) 5) :river)))
 
-(defn- find-first [f coll]
-  (first (filter f coll)))
-
 (defn- amount-needed-to-call [request]
   (let [call-action (find-first #(= % ActionType/CALL) (.getPossibleActions request))]
     (if (nil? call-action)
       0
       (.getAmount call-action))))
+
+(defn- can-check? [request]
+  (not (nil? (find-first #(= % ActionType/CHECK) (.getPossibleActions request)))))
 
 (defn get-game-state [client request]
   (let [state (.getCurrentPlayState client)]
@@ -95,5 +96,6 @@
      :cards-on-table (java-cards->cards (.getCommunityCards state))
      :pot-amount (.getPotTotal state)
      :call-amount (amount-needed-to-call request)
-     :round (get-round state)}))
+     :round (get-round state)
+     :can-check (can-check? request)}))
 

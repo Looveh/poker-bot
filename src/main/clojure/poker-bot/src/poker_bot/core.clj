@@ -1,9 +1,10 @@
 (ns poker-bot.core
   (:gen-class)
   (:use [clojure.tools.logging])
-  (:require [poker-bot.game-state :refer [get-game-state key->action]]
+  (:require [poker-bot.game-state :refer [get-game-state key->ActionType]]
             [poker-bot.logic :refer [action]]
-            [clojure.repl :refer [pst]])
+            [clojure.repl :refer [pst]]
+            [clojure.contrib.seq-utils :refer [find-first]])
   (:import
    (se.cygni.texasholdem.player Player)
    (se.cygni.texasholdem.game Action
@@ -41,8 +42,9 @@
 (def port 4711)
 
 (defn- get-best-action [request]
-  (let [game-state (get-game-state @client request)]
-    (key->action (action game-state))))
+  (let [game-state (get-game-state @client request)
+        action-type (key->ActionType (action game-state))]
+    (find-first #(= action-type (.getActionType %)) (.getPossibleActions request))))
 
 (defn get-action [request]
   (try

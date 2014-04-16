@@ -77,7 +77,9 @@
 (defn pot-odds [game-state]
   (let [pot-amount (:pot-amount game-state)
         call-amount (:call-amount game-state)]
-    (/ (+ pot-amount call-amount) call-amount)))
+    (if (zero? call-amount)
+      1000
+      (/ (+ pot-amount call-amount) call-amount))))
 
 (defn hand-odds [game-state]
   (let [round (:round game-state)
@@ -95,17 +97,16 @@
                          {:rank 1  :suit :hearts}}})
 
 (defn action [game-state]
-  (if (zero? (:call-amount game-state))
-    :call
+  (if (:can-check game-state)
+    :check
     (let [pot-odds (pot-odds game-state)
           hand-odds (hand-odds game-state)]
       (info (str game-state))
       (info (str "Odds: " pot-odds ":" hand-odds))
-
       (if (winning-hand? (seen-cards game-state))
         (do
           (info "Winning hand.")
           :call)
-        (if (<= pot-odds hand-odds)
+        (if (>= pot-odds hand-odds)
           :call
           :fold)))))
