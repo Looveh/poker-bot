@@ -1,6 +1,7 @@
 (ns poker-bot.logic
   (:require [clojure.set :refer [union difference intersection]]
-            [clojure.contrib.combinatorics :refer [combinations]]))
+            [clojure.contrib.combinatorics :refer [combinations]]
+            [clojure.contrib.seq-utils :refer [find-first]]))
 
 (def suits #{:hearts :spades :diamonds :clubs})
 
@@ -9,6 +10,8 @@
 (def full-deck (set (for [suit suits
                           rank ranks]
                       {:suit suit :rank rank})))
+
+full-deck
 
 (defn flush? [cards]
   (= 1 (count (distinct (map :suit cards)))))
@@ -19,11 +22,17 @@
                                   false)
                                (sort-by :rank cards))))
 
-(def all-hands (combinations full-deck 5))
+(defn pairs? [cards]
+  (not (= (count cards)
+          (count (distinct (map :rank cards))))))
+
+(def all-hands (map set (combinations full-deck 5)))
 
 (def all-flushes (filter flush? all-hands))
 
 (def all-straights (filter straight? all-hands))
+
+(def all-pairs (filter pairs? (combinations full-deck 2)))
 
 (defn seen-cards [game-state]
   (into (:cards-on-hand game-state) (:cards-on-table game-state)))
@@ -32,17 +41,17 @@
   (difference full-deck (seen-cards game-state)))
 
 (defn pair-outs [game-state]
-  (filter #(contains? (vals (:cards-on-hand game-state))
+  (set (filter #(contains? (set (map :rank (:cards-on-hand game-state)))
                       (:rank %))
-          unseen-cards))
-
-(defn flush-out [flush hand]
-  (let [flushables (intersection flush hand)]
-    (difference flushables flush)))
+           (unseen-cards game-state))))
 
 (defn flush-outs [game-state]
-  (let [possible-flushes (filter #(= 4 (intersection % (seen-cards game-state))) all-flushes)]
-    (map flush-out possible-flushes)))
+  (let [cards (seen-cards game-state)
+        flush-suit (first (find-first #(>= (second %) 4)
+                                      (map #(list (key %) (count (val %)))
+                                           (group-by :suit cards))))
+        cards-with-suit (filter #(= flush-suit (:suit %)) full-deck)]
+    (set (filter #(not (contains? cards %)) cards-with-suit))))
 
 (defn straight-outs [game-state]
   (let [all-straights (into #{} (filter straight? all-hands))]
@@ -70,5 +79,5 @@
   (if (= 0 (:call-amount game-state))
     :check
     (if (<= (pot-odds game-state) (hand-odds game-state))
-      :fold
-      :call)))
+      :call
+      :fold)))
