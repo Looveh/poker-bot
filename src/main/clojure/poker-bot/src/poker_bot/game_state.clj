@@ -13,32 +13,35 @@
            (se.cygni.texasholdem.communication.message.request ActionRequest)))
 
 (defn key->action [key]
-  (cond (= key :check) ActionType/CHECK
-        (= key :call)  ActionType/CALL
-        (= key :fold)  ActionType/FOLD))
+  (condp = key
+    :check ActionType/CHECK
+    :call ActionType/CALL
+    :fold ActionType/FOLD))
 
 (defn- translate-suit [card]
   (let [suit (.getSuit card)]
-    (cond (= suit (Suit/CLUBS))    :clubs
-          (= suit (Suit/DIAMONDS)) :diamonds
-          (= suit (Suit/HEARTS))   :hearts
-          (= suit (Suit/SPADES))   :spades)))
+    (condp = suit
+      (Suit/CLUBS) :clubs
+      (Suit/DIAMONDS) :diamonds
+      (Suit/HEARTS) :hearts
+      (Suit/SPADES) :spades)))
 
 (defn- translate-rank [card]
   (let [rank (.getRank card)]
-    (cond (= rank (Rank/ACE))   1
-          (= rank (Rank/DEUCE)) 2
-          (= rank (Rank/THREE)) 3
-          (= rank (Rank/FOUR))  4
-          (= rank (Rank/FIVE))  5
-          (= rank (Rank/SIX))   6
-          (= rank (Rank/SEVEN)) 7
-          (= rank (Rank/EIGHT)) 8
-          (= rank (Rank/NINE))  9
-          (= rank (Rank/TEN))   10
-          (= rank (Rank/JACK))  11
-          (= rank (Rank/KING))  12
-          (= rank (Rank/QUEEN)) 13)))
+    (condp = rank
+      (Rank/ACE)   1
+      (Rank/DEUCE) 2
+      (Rank/THREE) 3
+      (Rank/FOUR)  4
+      (Rank/FIVE)  5
+      (Rank/SIX)   6
+      (Rank/SEVEN) 7
+      (Rank/EIGHT) 8
+      (Rank/NINE)  9
+      (Rank/TEN)   10
+      (Rank/JACK)  11
+      (Rank/KING)  12
+      (Rank/QUEEN)) 13))
 
 (defn- java-card->card [card]
   (let [suit (translate-suit card)
