@@ -2,7 +2,8 @@
   (:gen-class)
   (:use [clojure.tools.logging])
   (:require [poker-bot.game-state :refer [get-game-state key->action]]
-            [poker-bot.logic :refer [action]])
+            [poker-bot.logic :refer [action]]
+            [clojure.repl :refer [pst]])
   (:import
    (se.cygni.texasholdem.player Player)
    (se.cygni.texasholdem.game Action
@@ -47,7 +48,7 @@
   (try
     (let [action (get-best-action request)]
       (info  (str "Action response " action)))
-  (catch Exception e (info (str "caught exception: " (.getMessage e))))))
+  (catch Exception e (info (str "caught exception: " (pst e))))))
 
 (defn- play-training-game [client]
   (.connect client)
