@@ -2,7 +2,7 @@
   (:require [clojure.set :refer [union difference intersection]]
             [clojure.contrib.combinatorics :refer [combinations]]))
 
-(def suits #{:heart :spade :diamond :clubs})
+(def suits #{:hearts :spades :diamonds :clubs})
 
 (def ranks #{1 2 3 4 5 6 7 8 9 10 11 12 13})
 

@@ -6,15 +6,44 @@
                                       PlayerShowDown
                                       Room
                                       ActionType)
+           (se.cygni.texasholdem.game.definitions Rank
+                                                  Suit)
            (se.cygni.texasholdem.client PlayerClient
                                         CurrentPlayState)
            (se.cygni.texasholdem.communication.message.request ActionRequest)))
 
 (defn key->action [key]
-  (throw (Exception. "TODO")))
+  (cond (= key :check) ActionType/CHECK
+        (= key :call)  ActionType/CALL
+        (= key :fold)  ActionType/FOLD))
+
+(defn- translate-suit [card]
+  (let [suit (.getSuit card)]
+    (cond (= suit (Suit/CLUBS))    :clubs
+          (= suit (Suit/DIAMONDS)) :diamonds
+          (= suit (Suit/HEARTS))   :hearts
+          (= suit (Suit/SPADES))   :spades)))
+
+(defn- translate-rank [card]
+  (let [rank (.getRank card)]
+    (cond (= rank (Rank/ACE))   1
+          (= rank (Rank/DEUCE)) 2
+          (= rank (Rank/THREE)) 3
+          (= rank (Rank/FOUR))  4
+          (= rank (Rank/FIVE))  5
+          (= rank (Rank/SIX))   6
+          (= rank (Rank/SEVEN)) 7
+          (= rank (Rank/EIGHT)) 8
+          (= rank (Rank/NINE))  9
+          (= rank (Rank/TEN))   10
+          (= rank (Rank/JACK))  11
+          (= rank (Rank/KING))  12
+          (= rank (Rank/QUEEN)) 13)))
 
 (defn- java-card->card [card]
-  (throw (Exception. "TODO")))
+  (let [suit (translate-suit card)
+        rank (translate-rank card)]
+    {:suit suit :rank rank}))
 
 (defn- java-cards->cards [cards]
   (map java-card->card cards))
