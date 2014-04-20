@@ -41,17 +41,25 @@
 (def host "poker.cygni.se")
 (def port 4711)
 
+(defn find-action [action-key all-actions]
+  (let [action-type (key->ActionType action-key)]
+    (find-first
+     #(= action-type (.getActionType %))
+     all-actions)))
+
 (defn- get-best-action [request]
+  (info (str "Possible actions to request: " (.getPossibleActions request)))
   (let [game-state (get-game-state @client request)
-        action-type (key->ActionType (action game-state))]
+        possible-actions (.getPossibleActions request)]
     (info (str "Action requested, game state: " game-state))
-    (find-first #(= action-type (.getActionType %)) (.getPossibleActions request))))
+    (if-let [best-action (find-action (action game-state) possible-actions)]
+      best-action
+      (find-action :fold possible-actions))))
 
 (defn get-action [request]
   (try
-    (let [action (get-best-action request)]
-      (info  (str "Action response " action)))
-  (catch Exception e (info (str "caught exception: " (pst e))))))
+    (get-best-action request)
+    (catch Exception e (info (str "caught exception: " (pst e))))))
 
 (defn- play-training-game [client]
   (.connect client)
@@ -63,7 +71,9 @@
              "ClojureBot")
     (actionRequired
      [request]
-     (get-action request))
+     (let [action (get-action request)]
+       (info (str "Request response: " action))
+       action))
     (onPlayIsStarted [event]
                      (info "Play started"))
     (onTableChangedStateEvent [event]
