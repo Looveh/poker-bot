@@ -2,39 +2,39 @@
   (:gen-class)
   (:use [clojure.tools.logging])
   (:require [poker-bot.game-state :refer [get-game-state key->ActionType find-action]]
-    [poker-bot.logic :refer [action]]
-    [clojure.repl :refer [pst]]
-    [clojure.contrib.seq-utils :refer [find-first]])
+            [poker-bot.logic :refer [action]]
+            [clojure.repl :refer [pst]]
+            [clojure.contrib.seq-utils :refer [find-first]])
   (:import
    (se.cygni.texasholdem.player Player)
    (se.cygni.texasholdem.game Action
-    Card
-    Hand
-    PlayerShowDown
-    Room)
+                              Card
+                              Hand
+                              PlayerShowDown
+                              Room)
    (se.cygni.texasholdem.client PlayerClient
-    CurrentPlayState)
+                                CurrentPlayState)
    (se.cygni.texasholdem.communication.message.request ActionRequest)
    (se.cygni.texasholdem.game.definitions PlayState
-    PokerHand)
+                                          PokerHand)
    (se.cygni.texasholdem.game.util PokerHandUtil)
    (se.cygni.texasholdem.communication.message.event CommunityHasBeenDealtACardEvent
-     PlayIsStartedEvent
-     PlayerBetBigBlindEvent
-     PlayerBetSmallBlindEvent
-     PlayerCalledEvent
-     PlayerCheckedEvent
-     PlayerFoldedEvent
-     PlayerForcedFoldedEvent
-     PlayerQuitEvent
-     PlayerRaisedEvent
-     PlayerWentAllInEvent
-     ServerIsShuttingDownEvent
-     ShowDownEvent
-     TableChangedStateEvent
-     TableIsDoneEvent
-     YouHaveBeenDealtACardEvent
-     YouWonAmountEvent)))
+                                                     PlayIsStartedEvent
+                                                     PlayerBetBigBlindEvent
+                                                     PlayerBetSmallBlindEvent
+                                                     PlayerCalledEvent
+                                                     PlayerCheckedEvent
+                                                     PlayerFoldedEvent
+                                                     PlayerForcedFoldedEvent
+                                                     PlayerQuitEvent
+                                                     PlayerRaisedEvent
+                                                     PlayerWentAllInEvent
+                                                     ServerIsShuttingDownEvent
+                                                     ShowDownEvent
+                                                     TableChangedStateEvent
+                                                     TableIsDoneEvent
+                                                     YouHaveBeenDealtACardEvent
+                                                     YouWonAmountEvent)))
 
 (def client (atom nil))
 (def host "poker.cygni.se")
@@ -43,7 +43,7 @@
 (defn- get-best-action [request]
   (info (str "Possible actions to request: " (.getPossibleActions request)))
   (let [game-state (get-game-state @client request)
-    possible-actions (.getPossibleActions request)]
+        possible-actions (.getPossibleActions request)]
     (info (str "Action requested, game state: " game-state))
     (if-let [best-action (find-action (action game-state) possible-actions)]
       best-action
@@ -61,14 +61,14 @@
 (defn- get-bot [host port]
   (proxy [Player] []
     (getName []
-     "ClojureBot")
+             "ClojureBot")
     (actionRequired
      [request]
      (let [action (get-action request)]
        (info (str "Request response: " action))
        action))
     (onPlayIsStarted [event]
-     (info "Play started"))
+                     (info "Play started"))
     (onTableChangedStateEvent [event]
                               ;(info "Table changed state")
                               )
@@ -112,9 +112,9 @@
                   ;(info "Player quit!")
                   )
     (connectionToGameServerLost
-      []
-      (info "Connection to game server lost")
-      (System/exit 0))
+     []
+     (info "Connection to game server lost")
+     (System/exit 0))
     (connectionToGameServerEstablished [])
     (serverIsShuttingDown [event])
     (onPlayerWentAllIn [event])))
