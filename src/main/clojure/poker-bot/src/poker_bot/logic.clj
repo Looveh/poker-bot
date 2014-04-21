@@ -16,6 +16,10 @@
 (defn flush? [cards]
   (= 1 (count (distinct (map :suit cards)))))
 
+(defn flush? [cards]
+  (let [cards-in-flush (filter #(<= 5 (count (val %))) (group-by :suit cards))]
+    (not (empty? cards-in-flush))))
+
 (defn straight? [cards]
   (not-any? false? (reductions #(if (= (inc (:rank %1)) (:rank %2))
                                   %2
@@ -68,7 +72,7 @@
   (let [pot-amount (:pot-amount game-state)
         call-amount (:call-amount game-state)]
     (if (zero? call-amount)
-      1000
+      0
       (/ (+ pot-amount call-amount) call-amount))))
 
 (defn hand-odds [game-state]
@@ -78,6 +82,11 @@
     (cond (= :flop round) (* odds 4)
           (= :turn round) (* odds 2)
           :else odds)))
+
+(defn all-in? [game-state]
+  (let [cards (concat (:cards-on-hand game-state) (:cards-on-table game-state))]
+    (or (straight? cards)
+        (flush? cards))))
 
 (defn action [game-state]
   (let [pot-odds (pot-odds game-state)
@@ -90,11 +99,13 @@
         (do
           (info "Winning hand!")
           :call)
-        (if (>= pot-odds hand-odds)
+        (if (<= pot-odds hand-odds)
           :call
-          (if (and (:is-small-blind game-state) (= :pre-flop (:round game-state)))
+          (if (= :pre-flop (:round game-state))
             :call
-            :fold))))))
+            (if (all-in? game-state)
+              :all-in
+              :fold)))))))
 
 (defn stuff [game-state]
   (and (:is-small-blind game-state) (= :pre-flop (:round game-state))))

@@ -19,7 +19,8 @@
   (condp = key
     :check ActionType/CHECK
     :call ActionType/CALL
-    :fold ActionType/FOLD))
+    :fold ActionType/FOLD
+    :all-in ActionType/ALL_IN))
 
 (defn find-action [action-key all-actions]
   (let [action-type (key->ActionType action-key)]
