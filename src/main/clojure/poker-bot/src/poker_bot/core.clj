@@ -45,9 +45,12 @@
   (let [game-state (get-game-state @client request)
         possible-actions (.getPossibleActions request)]
     (info (str "Action requested, game state: " game-state))
+    (info (str "Request: " (.getPossibleActions request)))
     (if-let [best-action (find-action (action game-state) possible-actions)]
       best-action
-      (find-action :fold possible-actions))))
+      (if-let [best-action (find-action :check possible-actions)]
+        best-action
+        (find-action :call possible-actions)))))
 
 (defn get-action [request]
   (try

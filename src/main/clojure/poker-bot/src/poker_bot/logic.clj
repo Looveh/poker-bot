@@ -89,23 +89,33 @@
         (flush? cards))))
 
 (defn action [game-state]
-  (let [pot-odds (pot-odds game-state)
-        hand-odds (hand-odds game-state)]
-    (info (str game-state))
-    (info (str "Odds: " pot-odds ":" hand-odds))
-    (if (:can-check game-state)
-      :check
-      (if (winning-hand? (:cards-on-hand game-state) (:cards-on-table game-state))
-        (do
-          (info "Winning hand!")
-          :call)
-        (if (<= pot-odds hand-odds)
-          :call
-          (if (= :pre-flop (:round game-state))
-            :call
-            (if (all-in? game-state)
-              :all-in
-              :fold)))))))
+  (if (or (= :pre-flop (:round game-state))
+          (:is-big-blind game-state))
+    (if (> 2000 (:call-amount game-state))
+      :call
+      :fold)
+    (if (and (< 2000 (:call-amount game-state))
+             (not (all-in? game-state)))
+      :fold
+      (let [pot-odds (pot-odds game-state)
+            hand-odds (hand-odds game-state)]
+        (info (str game-state))
+        (info (str "Odds: " pot-odds ":" hand-odds))
+        (if (:can-check game-state)
+          :check
+          (if (winning-hand? (:cards-on-hand game-state) (:cards-on-table game-state))
+            (do
+              (info "Winning hand!")
+              :raise)
+            (if (<= pot-odds hand-odds)
+              :call
+              (if (= :pre-flop (:round game-state))
+                :call
+                (if (all-in? game-state)
+                  :all-in
+                  (if (> 150 (:call-amount game-state))
+                    :call
+                    :fold))))))))))
 
 (defn stuff [game-state]
   (and (:is-small-blind game-state) (= :pre-flop (:round game-state))))

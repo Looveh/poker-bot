@@ -20,7 +20,8 @@
     :check ActionType/CHECK
     :call ActionType/CALL
     :fold ActionType/FOLD
-    :all-in ActionType/ALL_IN))
+    :all-in ActionType/ALL_IN
+    :raise ActionType/RAISE))
 
 (defn find-action [action-key all-actions]
   (let [action-type (key->ActionType action-key)]
