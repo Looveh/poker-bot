@@ -1,4 +1,6 @@
 (ns poker-bot.game-state
+  (:gen-class)
+  (:use [clojure.tools.logging])
   (:require [clojure.contrib.seq-utils :refer [find-first]])
   (:import (se.cygni.texasholdem.player Player)
            (se.cygni.texasholdem.game Action
@@ -18,6 +20,15 @@
     :check ActionType/CHECK
     :call ActionType/CALL
     :fold ActionType/FOLD))
+
+(defn find-action [action-key all-actions]
+  (let [action-type (key->ActionType action-key)]
+    (find-first
+     #(= action-type (.getActionType %))
+     all-actions)))
+
+(defn can-respond-with? [action-key all-actions]
+  (not (nil? (find-action action-key all-actions))))
 
 (defn- translate-suit [card]
   (let [suit (.getSuit card)]
@@ -82,20 +93,24 @@
           (=  (count cards-on-table) 5) :river)))
 
 (defn- amount-needed-to-call [request]
-  (let [call-action (find-first #(= (.getActionType %) ActionType/CALL) (.getPossibleActions request))]
-    (if (nil? call-action)
-      0
-      (.getAmount call-action))))
+  (if-let [call-action (find-action :call (.getPossibleActions request))]
+    (.getAmount call-action)
+    0))
 
 (defn- can-check? [request]
-  (not (nil? (find-first #(= % ActionType/CHECK) (.getPossibleActions request)))))
+  (can-respond-with? :check (.getPossibleActions request)))
+
+(defn log-state [state]
+  (info (str "Current play state " (.getCurrentPlayState state)))
+  (info (str "My cards " (.getMyCards state)))
+  (info (str "Cards on table " (.getCommunityCards state))))
 
 (defn get-game-state [client request]
   (let [state (.getCurrentPlayState client)]
+    (log-state state)
     {:cards-on-hand (java-cards->cards (.getMyCards state))
      :cards-on-table (java-cards->cards (.getCommunityCards state))
      :pot-amount (.getPotTotal state)
      :call-amount (amount-needed-to-call request)
      :round (get-round state)
      :can-check (can-check? request)}))
-

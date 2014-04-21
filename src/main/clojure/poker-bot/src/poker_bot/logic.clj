@@ -1,4 +1,5 @@
 (ns poker-bot.logic
+  (:gen-class)
   (:use [clojure.tools.logging])
   (:require [clojure.set :refer [union difference intersection]]
             [clojure.contrib.combinatorics :refer [combinations]]
@@ -38,7 +39,6 @@
 
 (defn unseen-cards [game-state]
   (difference full-deck (seen-cards game-state)))
-
 
 ;; (defn pair-outs [game-state]
 ;;   (set (filter #(contains? (set (map :rank (:cards-on-hand game-state)))
