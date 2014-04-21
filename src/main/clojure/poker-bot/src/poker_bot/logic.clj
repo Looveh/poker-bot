@@ -21,9 +21,12 @@
                                   false)
                                (sort-by :rank cards))))
 
-(defn pairs? [cards]
-  (not (= (count cards)
-          (count (distinct (map :rank cards))))))
+(defn pairs? [cards-on-hand cards-on-table]
+  (if (= 1 (count (distinct (map :rank cards-on-hand))))
+    true
+    (not (zero? (count (filter #(contains? (set (map :rank cards-on-hand))
+                                           (:rank %))
+                               cards-on-table))))))
 
 ;; (def all-hands (map set (combinations full-deck 5)))
 
@@ -59,15 +62,15 @@
 ;;          all-straights)))
 
 
-(defn winning-hand? [cards]
-  (or (pairs? cards)
-      (straight? cards)
-      (flush? cards)))
+(defn winning-hand? [cards-on-hand cards-on-table]
+  (or (pairs? cards-on-hand cards-on-table)
+      (straight? (concat cards-on-hand cards-on-table))
+      (flush? (concat cards-on-hand cards-on-table))))
 
 (defn outs [game-state]
   (let [cards (seen-cards game-state)
         unseen-cards (unseen-cards game-state)]
-    (filter #(winning-hand? (conj cards %)) unseen-cards)))
+    (filter #(winning-hand? (:cards-on-hand game-state) (conj (:cards-on-table game-state) %)) unseen-cards)))
 
 ;; (defn outs [game-state]
 ;;   (union (pair-outs game-state)
@@ -103,7 +106,7 @@
           hand-odds (hand-odds game-state)]
       (info (str game-state))
       (info (str "Odds: " pot-odds ":" hand-odds))
-      (if (winning-hand? (seen-cards game-state))
+      (if (winning-hand? (:cards-on-hand game-state) (:cards-on-table game-state))
         (do
           (info "Winning hand.")
           :call)
