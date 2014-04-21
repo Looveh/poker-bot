@@ -1,4 +1,5 @@
 (ns poker-bot.logic
+  (:gen-class)
   (:use [clojure.tools.logging])
   (:require [clojure.set :refer [union difference intersection]]
             [clojure.contrib.combinatorics :refer [combinations]]
@@ -28,20 +29,11 @@
                                            (:rank %))
                                cards-on-table))))))
 
-;; (def all-hands (map set (combinations full-deck 5)))
-
-;; (def all-flushes (filter flush? all-hands))
-
-;; (def all-straights (filter straight? all-hands))
-
-;; (def all-pairs (filter pairs? (combinations full-deck 2)))
-
 (defn seen-cards [game-state]
   (into (:cards-on-hand game-state) (:cards-on-table game-state)))
 
 (defn unseen-cards [game-state]
   (difference full-deck (seen-cards game-state)))
-
 
 ;; (defn pair-outs [game-state]
 ;;   (set (filter #(contains? (set (map :rank (:cards-on-hand game-state)))
@@ -72,11 +64,6 @@
         unseen-cards (unseen-cards game-state)]
     (filter #(winning-hand? (:cards-on-hand game-state) (conj (:cards-on-table game-state) %)) unseen-cards)))
 
-;; (defn outs [game-state]
-;;   (union (pair-outs game-state)
-;;          (straight-outs game-state)
-;;          (flush-outs game-state)))
-
 (defn pot-odds [game-state]
   (let [pot-amount (:pot-amount game-state)
         call-amount (:call-amount game-state)]
@@ -92,24 +79,25 @@
           (= :turn round) (* odds 2)
           :else odds)))
 
-(hand-odds {:round :flop
-            :cards-on-hand  #{{:rank 7  :suit :hearts}
-                         {:rank 4  :suit :hearts}}
-       :cards-on-table #{{:rank 10 :suit :hearts}
-                         {:rank 11 :suit :clubs}
-                         {:rank 1  :suit :hearts}}})
-
 (defn action [game-state]
-  (if (:can-check game-state)
-    :check
-    (let [pot-odds (pot-odds game-state)
-          hand-odds (hand-odds game-state)]
-      (info (str game-state))
-      (info (str "Odds: " pot-odds ":" hand-odds))
+  (let [pot-odds (pot-odds game-state)
+        hand-odds (hand-odds game-state)]
+    (info (str game-state))
+    (info (str "Odds: " pot-odds ":" hand-odds))
+    (if (:can-check game-state)
+      :check
       (if (winning-hand? (:cards-on-hand game-state) (:cards-on-table game-state))
         (do
-          (info "Winning hand.")
+          (info "Winning hand!")
           :call)
         (if (>= pot-odds hand-odds)
           :call
-          :fold)))))
+          (if (and (:is-small-blind game-state) (= :pre-flop (:round game-state)))
+            :call
+            :fold))))))
+
+(defn stuff [game-state]
+  (and (:is-small-blind game-state) (= :pre-flop (:round game-state))))
+
+(stuff {:is-small-blind true
+        :round :pre-flop})
