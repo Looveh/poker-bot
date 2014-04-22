@@ -88,10 +88,21 @@
     (or (straight? cards)
         (flush? cards))))
 
+(defn should-continue-to-flop? [game-state]
+  (let [cards-on-hand (:cards-on-hand game-state)]
+    (or (:can-check game-state)
+        (:is-big-blind game-state)
+        (:is-small-blind game-state)
+        (pairs? cards-on-hand #{})
+        (and (not (zero? (count (group-by :suit cards-on-hand))))
+             (= 2 (count (filter #(or (= 12 (:rank %))
+                                             (= 13 (:rank %))
+                                             (= 1 (:rank %)))
+                                        cards-on-hand)))))))
+
 (defn action [game-state]
-  (if (or (= :pre-flop (:round game-state))
-          (:is-big-blind game-state))
-    (if (> 2000 (:call-amount game-state))
+  (if (= :pre-flop (:round game-state))
+    (if (should-continue-to-flop? game-state)
       :call
       :fold)
     (if (and (< 2000 (:call-amount game-state))
