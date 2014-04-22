@@ -39,25 +39,6 @@
 (defn unseen-cards [game-state]
   (difference full-deck (seen-cards game-state)))
 
-;; (defn pair-outs [game-state]
-;;   (set (filter #(contains? (set (map :rank (:cards-on-hand game-state)))
-;;                       (:rank %))
-;;            (unseen-cards game-state))))
-
-;; (defn flush-outs [game-state]
-;;   (let [cards (seen-cards game-state)
-;;         flush-suit (first (find-first #(>= (second %) 4)
-;;                                       (map #(list (key %) (count (val %)))
-;;                                            (group-by :suit cards))))
-;;         cards-with-suit (filter #(= flush-suit (:suit %)) full-deck)]
-;;     (set (filter #(not (contains? cards %)) cards-with-suit))))
-
-;; (defn straight-outs [game-state]
-;;   (let [all-straights (into #{} (filter straight? all-hands))]
-;;     (map #(intersection % (seen-cards game-state))
-;;          all-straights)))
-
-
 (defn winning-hand? [cards-on-hand cards-on-table]
   (or (pairs? cards-on-hand cards-on-table)
       (straight? (concat cards-on-hand cards-on-table))
@@ -127,9 +108,3 @@
                   (if (> 150 (:call-amount game-state))
                     :call
                     :fold))))))))))
-
-(defn stuff [game-state]
-  (and (:is-small-blind game-state) (= :pre-flop (:round game-state))))
-
-(stuff {:is-small-blind true
-        :round :pre-flop})
